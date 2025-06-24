@@ -14,22 +14,15 @@ namespace Code.Player
 
         public override void OnNetworkSpawn()
         {
+            if (!IsOwner) return;
+
             var config = Resources.Load<PlayerConfig>(AssetPath.HeroPath);
-
-            _health.Value = new Health
-            {
-                Max = config.MaxHealth,
-                Current = config.MaxHealth,
-            };
-
+            InitializeHealthServerRpc(config.MaxHealth, config.MaxHealth);
             _health.OnValueChanged += HandleHealthChanged;
         }
 
         public override void OnNetworkDespawn() =>
             _health.OnValueChanged -= HandleHealthChanged;
-
-        private void HandleHealthChanged(Health previous, Health current) =>
-            OnHealthChanged?.Invoke(current.Current);
 
         [ServerRpc]
         public void TakeDamageServerRpc(int amount)
@@ -37,6 +30,19 @@ namespace Code.Player
             var current = _health.Value;
             current.Current = Mathf.Max(0, current.Current - amount);
             _health.Value = current;
+        }
+
+        private void HandleHealthChanged(Health previous, Health current) =>
+            OnHealthChanged?.Invoke(current.Current);
+
+        [ServerRpc]
+        private void InitializeHealthServerRpc(int current, int max)
+        {
+            _health.Value = new Health
+            {
+                Max = current,
+                Current = max
+            };
         }
     }
 }
