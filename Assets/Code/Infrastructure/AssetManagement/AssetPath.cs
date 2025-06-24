@@ -4,5 +4,6 @@ namespace Code.Infrastructure.AssetManagement
     {
         public const string HeroConfigPath = "Configs/PlayerConfig";
         public const string EnemyPrefabPath = "Enemy/Enemy";
+        public const string BulletPrefab = "Bullet/Bullet";
     }
 }

@@ -1,4 +1,6 @@
 using System.Collections;
+using Code.Bullet;
+using Code.Infrastructure.AssetManagement;
 using Code.Player;
 using Unity.Netcode;
 using UnityEngine;
@@ -14,11 +16,15 @@ namespace Code.Enemy
         [SerializeField] private int _damage;
 
         private Coroutine _attackLoop;
+        private NetworkObject _bulletPrefab;
 
         public override void OnNetworkSpawn()
         {
             if (IsServer)
+            {
+                _bulletPrefab = Resources.Load<NetworkObject>(AssetPath.BulletPrefab);
                 _attackLoop = StartCoroutine(AttackRoutine());
+            }
         }
 
         public override void OnNetworkDespawn()
@@ -44,13 +50,18 @@ namespace Code.Enemy
             float distance = Vector3.Distance(transform.position, closest.position);
             if (distance <= _attackRadius)
             {
-                var health = closest.GetComponent<PlayerHealth>();
-                if (health != null)
-                {
-                    health.TakeDamage(_damage);
-                    Debug.Log($"Player {health.GetComponent<NetworkObject>().OwnerClientId} current HP - {health.Current}");
-                }
+                Vector3 direction = (closest.position - transform.position).normalized;
+                Shoot(direction);
             }
+        }
+
+        private void Shoot(Vector3 direction)
+        {
+            Vector3 spawnPos = transform.position + direction.normalized;
+            var bulletInstance = Instantiate(_bulletPrefab, spawnPos, Quaternion.LookRotation(direction));
+            bulletInstance.Spawn();
+
+            bulletInstance.GetComponent<MoveForward>().Initialize(direction);
         }
     }
 }
