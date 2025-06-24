@@ -1,3 +1,4 @@
+using Code.Infrastructure.AssetManagement;
 using Code.Infrastructure.Services.Inputs;
 using Code.StaticData;
 using Unity.Netcode;
@@ -9,14 +10,14 @@ namespace Code.Player
     public class PlayerMove : NetworkBehaviour
     {
         [SerializeField] private CharacterController _characterController;
-        [SerializeField] private float _movementSpeed;
 
+        private float _movementSpeed;
         private IInputService _inputService;
 
         public override void OnNetworkSpawn()
         {
             _inputService = new InputService();
-            _movementSpeed = Resources.Load<PlayerConfig>("Configs").MovementSpeed;
+            _movementSpeed = Resources.Load<PlayerConfig>(AssetPath.HeroPath).MovementSpeed;
         }
 
         private void Update()

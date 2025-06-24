@@ -1,4 +1,5 @@
 using System;
+using Code.Infrastructure.AssetManagement;
 using Code.StaticData;
 using Unity.Netcode;
 using UnityEngine;
@@ -13,9 +14,10 @@ namespace Code.Player
 
         public override void OnNetworkSpawn()
         {
-            var config = Resources.Load<PlayerConfig>("Configs");
+            var config = Resources.Load<PlayerConfig>(AssetPath.HeroPath);
 
-            _health.Value = new Health {
+            _health.Value = new Health
+            {
                 Max = config.MaxHealth,
                 Current = config.MaxHealth,
             };
@@ -26,10 +28,8 @@ namespace Code.Player
         public override void OnNetworkDespawn() =>
             _health.OnValueChanged -= HandleHealthChanged;
 
-        private void HandleHealthChanged(Health previous, Health current)
-        {
+        private void HandleHealthChanged(Health previous, Health current) =>
             OnHealthChanged?.Invoke(current.Current);
-        }
 
         [ServerRpc]
         public void TakeDamageServerRpc(int amount)
