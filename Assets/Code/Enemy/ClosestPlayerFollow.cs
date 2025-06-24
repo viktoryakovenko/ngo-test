@@ -7,7 +7,7 @@ namespace Code.Enemy
     [RequireComponent(typeof(NavMeshAgent), typeof(TargetSelector))]
     public class ClosestPlayerFollow : NetworkBehaviour
     {
-        [SerializeField] private NavMeshAgent Agent;
+        [SerializeField] private NavMeshAgent _agent;
         [SerializeField] private TargetSelector _targetSelector;
 
         private void Update()
@@ -19,7 +19,7 @@ namespace Code.Enemy
             _targetSelector.FindClosestTarget(transform.position);
 
             if (_targetSelector.CurrentTarget != null)
-                Agent.destination = _targetSelector.CurrentTarget.position;
+                _agent.destination = _targetSelector.CurrentTarget.position;
         }
     }
 }
