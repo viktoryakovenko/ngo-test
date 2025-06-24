@@ -1,4 +1,5 @@
 using Code.Infrastructure.Services.Inputs;
+using Code.StaticData;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -12,8 +13,11 @@ namespace Code.Player
 
         private IInputService _inputService;
 
-        private void Start() =>
+        public override void OnNetworkSpawn()
+        {
             _inputService = new InputService();
+            _movementSpeed = Resources.Load<PlayerConfig>("Configs").MovementSpeed;
+        }
 
         private void Update()
         {
