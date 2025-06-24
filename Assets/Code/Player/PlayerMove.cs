@@ -1,3 +1,4 @@
+using Code.Infrastructure.Services.Inputs;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -6,11 +7,13 @@ namespace Code.Player
     [RequireComponent(typeof(CharacterController))]
     public class PlayerMove : NetworkBehaviour
     {
-        private const string Horizontal = "Horizontal";
-        private const string Vertical = "Vertical";
-
         [SerializeField] private CharacterController _characterController;
         [SerializeField] private float _movementSpeed;
+
+        private IInputService _inputService;
+
+        private void Start() =>
+            _inputService = new InputService();
 
         private void Update()
         {
@@ -33,16 +36,14 @@ namespace Code.Player
         private void MoveServerRpc(Vector3 movementInput) =>
             Move(movementInput);
 
-        private Vector2 Axis() =>
-            new Vector2(Input.GetAxis(Horizontal), Input.GetAxis(Vertical));
 
         private Vector3 MovementVector()
         {
             Vector3 movementVector = Vector3.zero;
 
-            if (Axis().sqrMagnitude > Constants.Epsilon)
+            if (_inputService.Axis.sqrMagnitude > Constants.Epsilon)
             {
-                movementVector = Camera.main.transform.TransformDirection(Axis());
+                movementVector = Camera.main.transform.TransformDirection(_inputService.Axis);
                 movementVector.y = 0;
                 movementVector.Normalize();
 
