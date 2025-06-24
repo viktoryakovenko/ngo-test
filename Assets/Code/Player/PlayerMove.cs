@@ -1,40 +1,56 @@
 using Unity.Netcode;
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterController))]
-public class PlayerMove : NetworkBehaviour
+namespace Code.Player
 {
-    private const string Horizontal = "Horizontal";
-    private const string Vertical = "Vertical";
-
-    [SerializeField] private CharacterController _characterController;
-    [SerializeField] private float _movementSpeed;
-
-    private void Update()
+    [RequireComponent(typeof(CharacterController))]
+    public class PlayerMove : NetworkBehaviour
     {
-        if (!IsOwner) return;
+        private const string Horizontal = "Horizontal";
+        private const string Vertical = "Vertical";
 
-        Move();
-    }
+        [SerializeField] private CharacterController _characterController;
+        [SerializeField] private float _movementSpeed;
 
-    private void Move()
-    {
-        Vector3 movementVector = Vector3.zero;
-
-        if (Axis().sqrMagnitude > Constants.Epsilon)
+        private void Update()
         {
-            movementVector = Camera.main.transform.TransformDirection(Axis());
-            movementVector.y = 0;
-            movementVector.Normalize();
+            if (!IsOwner) return;
 
-            transform.forward = movementVector;
+            var movementVector = MovementVector();
+
+            if (IsServer && IsLocalPlayer)
+                Move(movementVector);
+            else if (IsLocalPlayer)
+            {
+                MoveServerRpc(movementVector);
+            }
         }
 
-        movementVector += Physics.gravity;
+        private void Move(Vector3 movementVector) =>
+            _characterController.Move(_movementSpeed * Time.deltaTime * movementVector);
 
-        _characterController.Move(_movementSpeed * Time.deltaTime * movementVector);
+        [ServerRpc]
+        private void MoveServerRpc(Vector3 movementInput) =>
+            Move(movementInput);
+
+        private Vector2 Axis() =>
+            new Vector2(Input.GetAxis(Horizontal), Input.GetAxis(Vertical));
+
+        private Vector3 MovementVector()
+        {
+            Vector3 movementVector = Vector3.zero;
+
+            if (Axis().sqrMagnitude > Constants.Epsilon)
+            {
+                movementVector = Camera.main.transform.TransformDirection(Axis());
+                movementVector.y = 0;
+                movementVector.Normalize();
+
+                transform.forward = movementVector;
+            }
+
+            movementVector += Physics.gravity;
+            return movementVector;
+        }
     }
-
-    private static Vector2 Axis() =>
-        new Vector2(Input.GetAxis(Horizontal), Input.GetAxis(Vertical));
 }
