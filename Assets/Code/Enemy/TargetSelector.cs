@@ -8,8 +8,10 @@ namespace Code.Enemy
         [SerializeField] private float searchRadius;
 
         private Transform _currentTarget;
+        private float _currentDistance;
 
         public Transform CurrentTarget => _currentTarget;
+        public float CurrentDistance => _currentDistance;
 
         public void FindClosestTarget(Vector3 position)
         {
@@ -30,6 +32,7 @@ namespace Code.Enemy
                 }
             }
 
+            _currentDistance = minDistance;
             _currentTarget = closest;
         }
     }

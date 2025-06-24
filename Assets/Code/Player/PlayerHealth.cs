@@ -11,6 +11,8 @@ namespace Code.Player
     {
         public event Action<int> OnHealthChanged;
 
+        public int Current => _health.Value.Current;
+
         private NetworkVariable<Health> _health = new NetworkVariable<Health>();
 
         public override void OnNetworkSpawn()
@@ -25,8 +27,7 @@ namespace Code.Player
         public override void OnNetworkDespawn() =>
             _health.OnValueChanged -= HandleHealthChanged;
 
-        [ServerRpc]
-        public void TakeDamageServerRpc(int amount)
+        public void TakeDamage(int amount)
         {
             var current = _health.Value;
             current.Current = Mathf.Max(0, current.Current - amount);

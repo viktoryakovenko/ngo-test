@@ -25,15 +25,16 @@ namespace Code.Player
         private void HealthChanged(int current)
         {
             if (!_isDead && current <= 0)
-                Die();
+                DieServerRpc();
         }
 
-        private void Die()
+        [ServerRpc]
+        private void DieServerRpc()
         {
-            if (!IsServer) return;
-
-            Debug.Log($"{name} died.");
+            Debug.Log($"Player {GetComponent<NetworkObject>().OwnerClientId} died.");
             OnDeath?.Invoke();
+
+            Destroy(gameObject);
         }
     }
 }
