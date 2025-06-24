@@ -1,5 +1,6 @@
 using System;
 using Code.Infrastructure.AssetManagement;
+using Code.NetworkData;
 using Code.StaticData;
 using Unity.Netcode;
 using UnityEngine;
@@ -16,7 +17,7 @@ namespace Code.Player
         {
             if (!IsOwner) return;
 
-            var config = Resources.Load<PlayerConfig>(AssetPath.HeroPath);
+            var config = Resources.Load<PlayerConfig>(AssetPath.HeroConfigPath);
             InitializeHealthServerRpc(config.MaxHealth, config.MaxHealth);
             _health.OnValueChanged += HandleHealthChanged;
         }

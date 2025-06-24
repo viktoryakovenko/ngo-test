@@ -17,7 +17,7 @@ namespace Code.Player
         public override void OnNetworkSpawn()
         {
             _inputService = new InputService();
-            _movementSpeed = Resources.Load<PlayerConfig>(AssetPath.HeroPath).MovementSpeed;
+            _movementSpeed = Resources.Load<PlayerConfig>(AssetPath.HeroConfigPath).MovementSpeed;
         }
 
         private void Update()

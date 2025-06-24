@@ -1,4 +1,7 @@
-﻿public class Constants
+﻿namespace Code
 {
-    public const float Epsilon = 0.001f;
+    public class Constants
+    {
+        public const float Epsilon = 0.001f;
+    }
 }

@@ -2,6 +2,7 @@ namespace Code.Infrastructure.AssetManagement
 {
     public static class AssetPath
     {
-        public const string HeroPath = "Configs/PlayerConfig";
+        public const string HeroConfigPath = "Configs/PlayerConfig";
+        public const string EnemyPrefabPath = "Enemy/Enemy";
     }
 }
