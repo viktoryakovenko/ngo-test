@@ -1,7 +1,5 @@
 using System.Collections;
-using Code.Bullet;
-using Code.Infrastructure.AssetManagement;
-using Code.Player;
+using Code.Infrastructure.Services.BulletFactory;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -16,13 +14,13 @@ namespace Code.Enemy
         [SerializeField] private int _damage;
 
         private Coroutine _attackLoop;
-        private NetworkObject _bulletPrefab;
+        private IBulletFactory _bulletFactory;
 
         public override void OnNetworkSpawn()
         {
             if (IsServer)
             {
-                _bulletPrefab = Resources.Load<NetworkObject>(AssetPath.BulletPrefab);
+                _bulletFactory = new BulletFactory();
                 _attackLoop = StartCoroutine(AttackRoutine());
             }
         }
@@ -57,11 +55,8 @@ namespace Code.Enemy
 
         private void Shoot(Vector3 direction)
         {
-            Vector3 spawnPos = transform.position + direction.normalized;
-            var bulletInstance = Instantiate(_bulletPrefab, spawnPos, Quaternion.LookRotation(direction));
-            bulletInstance.Spawn();
-
-            bulletInstance.GetComponent<MoveForward>().Initialize(direction);
+            Vector3 spawnPosition = transform.position + direction.normalized;
+            _bulletFactory.Create(spawnPosition, direction);
         }
     }
 }
